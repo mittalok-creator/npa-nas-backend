@@ -1,0 +1,19 @@
+{
+  "name": "npa-nas-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Self-hosted database + Admin login backend for the UPGB NPA Dashboard, deployed on Alok's own Synology NAS.",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "reset-admin-password": "node scripts/reset-admin-password.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.7.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.21.1",
+    "express-rate-limit": "^7.4.1"
+  }
+}

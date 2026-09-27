@@ -1,0 +1,40 @@
+services:
+  npa-nas-backend:
+    build: .
+    image: npa-nas-backend:latest
+    restart: unless-stopped
+    ports:
+      # Only bind to the NAS's own loopback/LAN -- the public internet path
+      # goes through the cloudflared tunnel container below, never a direct
+      # port mapping to the outside world.
+      - "127.0.0.1:4100:4100"
+    environment:
+      PORT: "4100"
+      DATA_DIR: "/app/data"
+      SESSION_TTL_HOURS: "24"
+      ADMIN_CORS_ORIGIN: "https://npadashboard.alokmittal.net"
+      GITHUB_REPO_OWNER: "mittalok-creator"
+      GITHUB_REPO_NAME: "NPA-DASHBOARD"
+      GITHUB_REPO_BRANCH: "main"
+      GITHUB_PAT: "${GITHUB_PAT}"
+    volumes:
+      - npa-nas-data:/app/data
+
+  # Alok, once you're ready for M4 (public exposure): uncomment this,
+  # replace TUNNEL_TOKEN with the token Cloudflare gives you when you create
+  # the tunnel (`cloudflared tunnel create npa-backend`), and map a public
+  # hostname (e.g. api.alokmittal.net) to http://npa-nas-backend:4100 in the
+  # Cloudflare Zero Trust dashboard. No NAS router port needs opening for
+  # this at all -- cloudflared only makes an outbound connection.
+  #
+  # cloudflared:
+  #   image: cloudflare/cloudflared:latest
+  #   restart: unless-stopped
+  #   command: tunnel run
+  #   environment:
+  #     TUNNEL_TOKEN: "${CLOUDFLARE_TUNNEL_TOKEN}"
+  #   depends_on:
+  #     - npa-nas-backend
+
+volumes:
+  npa-nas-data:
